@@ -1,7 +1,11 @@
 package model;
 
-public class Order {
-    private String orderId;
-    private String medicineName;
-    private int quantity;
+public class User {
+    private String username;
+    private String role;
+
+    public User(String username, String role) {
+        this.username = username;
+        this.role = role;
+    }
 }
