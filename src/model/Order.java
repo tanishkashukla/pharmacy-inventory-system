@@ -10,4 +10,15 @@ public class Order {
         this.medicineName = medicineName;
         this.quantity = quantity;
     }
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public String getMedicineName() {
+        return medicineName;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
 }
