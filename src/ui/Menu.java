@@ -1,11 +1,10 @@
 package ui;
 
-import service.InventoryService;
-import service.OrderService;
+import java.util.Scanner;
 import model.Medicine;
 import model.Order;
-
-import java.util.Scanner;
+import service.InventoryService;
+import service.OrderService;
 
 public class Menu {
 
