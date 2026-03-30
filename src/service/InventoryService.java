@@ -1,7 +1,7 @@
 package service;
 
-import java.util.ArrayList;
 import model.Medicine;
+import java.util.ArrayList;
 
 public class InventoryService {
 
@@ -57,6 +57,23 @@ public class InventoryService {
 
         if (!removed) {
             System.out.println("Medicine not found.");
+        }
+    }
+
+    // Low stock alert
+    public void showLowStock() {
+        boolean found = false;
+
+        for (Medicine m : medicines) {
+            if (m.getQuantity() < 5) {
+                System.out.println("Low Stock: " + m.getName() +
+                        " (Quantity: " + m.getQuantity() + ")");
+                found = true;
+            }
+        }
+
+        if (!found) {
+            System.out.println("No low stock medicines.");
         }
     }
 }
