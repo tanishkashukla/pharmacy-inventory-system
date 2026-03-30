@@ -1,10 +1,11 @@
 package ui;
 
-import java.util.Scanner;
-import model.Medicine;
-import model.Order;
 import service.InventoryService;
 import service.OrderService;
+import model.Medicine;
+import model.Order;
+
+import java.util.Scanner;
 
 public class Menu {
 
@@ -21,6 +22,7 @@ public class Menu {
             System.out.println("4. View Orders");
             System.out.println("5. Exit");
             System.out.println("6. Search Medicine");
+            System.out.println("7. Delete Medicine");
 
             int choice = scanner.nextInt();
             scanner.nextLine();
@@ -43,6 +45,9 @@ public class Menu {
                     return;
                 case 6:
                     searchMedicine();
+                    break;
+                case 7:
+                    deleteMedicine();
                     break;
                 default:
                     System.out.println("Invalid choice");
@@ -88,5 +93,12 @@ public class Menu {
         String name = scanner.nextLine();
 
         inventoryService.searchMedicine(name);
+    }
+
+    private void deleteMedicine() {
+        System.out.print("Enter medicine name to delete: ");
+        String name = scanner.nextLine();
+
+        inventoryService.deleteMedicine(name);
     }
 }
