@@ -41,4 +41,22 @@ public class InventoryService {
             System.out.println("Medicine not found.");
         }
     }
+
+    // Delete medicine
+    public void deleteMedicine(String name) {
+        boolean removed = false;
+
+        for (int i = 0; i < medicines.size(); i++) {
+            if (medicines.get(i).getName().equalsIgnoreCase(name)) {
+                medicines.remove(i);
+                System.out.println("Medicine deleted successfully.");
+                removed = true;
+                break;
+            }
+        }
+
+        if (!removed) {
+            System.out.println("Medicine not found.");
+        }
+    }
 }
