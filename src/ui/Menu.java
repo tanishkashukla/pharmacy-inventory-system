@@ -23,6 +23,7 @@ public class Menu {
             System.out.println("5. Exit");
             System.out.println("6. Search Medicine");
             System.out.println("7. Delete Medicine");
+            System.out.println("8. Show Low Stock Medicines");
 
             int choice = scanner.nextInt();
             scanner.nextLine();
@@ -48,6 +49,9 @@ public class Menu {
                     break;
                 case 7:
                     deleteMedicine();
+                    break;
+                case 8:
+                    showLowStock();
                     break;
                 default:
                     System.out.println("Invalid choice");
@@ -100,5 +104,9 @@ public class Menu {
         String name = scanner.nextLine();
 
         inventoryService.deleteMedicine(name);
+    }
+
+    private void showLowStock() {
+        inventoryService.showLowStock();
     }
 }
