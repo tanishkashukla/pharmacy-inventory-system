@@ -1,7 +1,8 @@
-package src;
+import ui.Menu;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Pharmacy Inventory System Started...");
+        Menu menu = new Menu();
+        menu.start();
     }
 }
