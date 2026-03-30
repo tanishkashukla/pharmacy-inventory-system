@@ -21,9 +21,10 @@ public class Menu {
             System.out.println("3. Place Order");
             System.out.println("4. View Orders");
             System.out.println("5. Exit");
+            System.out.println("6. Search Medicine");
 
             int choice = scanner.nextInt();
-            scanner.nextLine(); // clear buffer
+            scanner.nextLine();
 
             switch (choice) {
                 case 1:
@@ -41,6 +42,9 @@ public class Menu {
                 case 5:
                     System.out.println("Exiting...");
                     return;
+                case 6:
+                    searchMedicine();
+                    break;
                 default:
                     System.out.println("Invalid choice");
             }
@@ -59,6 +63,7 @@ public class Menu {
 
         System.out.print("Enter quantity: ");
         int quantity = scanner.nextInt();
+        scanner.nextLine();
 
         Medicine medicine = new Medicine(name, category, price, quantity);
         inventoryService.addMedicine(medicine);
@@ -73,8 +78,16 @@ public class Menu {
 
         System.out.print("Enter quantity: ");
         int quantity = scanner.nextInt();
+        scanner.nextLine();
 
         Order order = new Order(orderId, medicineName, quantity);
         orderService.placeOrder(order);
+    }
+
+    private void searchMedicine() {
+        System.out.print("Enter medicine name to search: ");
+        String name = scanner.nextLine();
+
+        inventoryService.searchMedicine(name);
     }
 }
