@@ -105,7 +105,6 @@ public class Menu {
 
         inventoryService.deleteMedicine(name);
     }
-
     private void showLowStock() {
         inventoryService.showLowStock();
     }
