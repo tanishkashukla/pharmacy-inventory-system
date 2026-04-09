@@ -5,6 +5,7 @@ function MedicineTable({ medicines, selectedId, onSelectMedicine }) {
         <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
           <tr>
             <th className="px-4 py-3">Medicine</th>
+            <th className="px-4 py-3">Batch</th>
             <th className="px-4 py-3">Category</th>
             <th className="px-4 py-3">Price</th>
             <th className="px-4 py-3">Stock</th>
@@ -13,7 +14,13 @@ function MedicineTable({ medicines, selectedId, onSelectMedicine }) {
         </thead>
         <tbody>
           {medicines.map((medicine) => {
-            const lowStock = medicine.quantity <= 20
+            const totalQuantity = medicine.batches?.reduce((acc, b) => acc + b.quantity, 0) || 0;
+            const earliestExpiry = medicine.batches?.reduce((prev, curr) => {
+              return (new Date(curr.expiryDate) < new Date(prev.expiryDate)) ? curr : prev;
+            })?.expiryDate || 'N/A';
+            const batchNum = medicine.batches?.[0]?.batchNumber || 'N/A';
+
+            const lowStock = totalQuantity <= 20
             const isSelected = medicine.id === selectedId
             return (
               <tr
@@ -24,6 +31,7 @@ function MedicineTable({ medicines, selectedId, onSelectMedicine }) {
                 }`}
               >
                 <td className="px-4 py-3 font-medium text-slate-700">{medicine.name}</td>
+                <td className="px-4 py-3 text-slate-600">{batchNum}</td>
                 <td className="px-4 py-3 text-slate-600">{medicine.category}</td>
                 <td className="px-4 py-3 text-slate-600">{medicine.price}</td>
                 <td className="px-4 py-3">
@@ -32,10 +40,10 @@ function MedicineTable({ medicines, selectedId, onSelectMedicine }) {
                       lowStock ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
                     }`}
                   >
-                    {lowStock ? `Low (${medicine.quantity})` : `In Stock (${medicine.quantity})`}
+                    {lowStock ? `Low (${totalQuantity})` : `In Stock (${totalQuantity})`}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-slate-600">{medicine.expiryDate}</td>
+                <td className="px-4 py-3 text-slate-600">{earliestExpiry}</td>
               </tr>
             )
           })}
