@@ -1,54 +1,79 @@
 # Pharmacy Inventory Management System
 
-Full-stack pharmacy inventory and order management project with:
+## Project Overview
 
-- Java/Spring Boot backend APIs
-- React + Tailwind frontend admin dashboard
+The Pharmacy Inventory Management System is a full-stack application built for admins and pharmacists to manage daily pharmacy operations efficiently. It supports medicine, order, report, and user management through a clean web interface and REST APIs. The project demonstrates strong object-oriented design in Java, complete CRUD workflows, and practical frontend-backend communication. It follows a layered architecture pattern (controller, service, repository, model) for maintainable and scalable code. It also includes database persistence using H2 in-memory database for quick setup and project demonstrations. This system is designed to be easy to run for faculty evaluation, project submission, and viva presentations.
+
+This project demonstrates:
+- OOP concepts in Java
+- CRUD operations
+- REST API integration
+- frontend-backend communication
+- layered architecture
+- database persistence
 
 ## Features
 
-- Manage medicines (add, update, delete, search)
-- Place and track orders
-- Dashboard cards and admin navigation
-- Reports and users management pages (frontend)
+- Medicine CRUD
+- User management
+- Order placement
+- Low stock alerts
+- Expiry alerts
+- Reports dashboard
+- Search and filter
+- Role-based users
+- Responsive frontend UI
 
 ## Tech Stack
 
-- Backend: Java, Spring Boot, Spring Data JPA
-- Frontend: React, Vite, Tailwind CSS
-- Database: Configured through `src/main/resources/application.properties`
+### Backend
+
+- Java
+- Spring Boot
+- REST API
+- H2 in-memory database
+- Layered architecture (controller, service, repository, model)
+
+### Frontend
+
+- React.js
+- Vite
+- Tailwind CSS
+- Axios
 
 ## Project Structure
 
-- `src/` - backend source code
-- `frontend/` - React frontend application
-- `pom.xml` - Maven build file for backend
+```text
+java_medicine_inventory/
+├── src/
+├── frontend/
+├── screenshots/
+├── report/
+└── README.md
+```
 
-## Run Backend
+## Backend Setup Instructions
 
-Requirements:
-
-- Java 17+
-- Maven 3.8+
-
-Commands:
+1. Open the root folder.
+2. Run:
 
 ```bash
 mvn spring-boot:run
 ```
 
-Backend default URL:
+Backend runs on:
+- `http://localhost:8081`
 
-- `http://localhost:8080`
+API:
+- `http://localhost:8081/api/medicines`
 
-## Run Frontend
+H2 console:
+- `http://localhost:8081/api/h2-console`
 
-Requirements:
+JDBC URL:
+- `jdbc:h2:mem:pharmacydb`
 
-- Node.js 18+
-- npm 9+
-
-Commands:
+## Frontend Setup Instructions
 
 ```bash
 cd frontend
@@ -56,18 +81,59 @@ npm install
 npm run dev
 ```
 
-Frontend default URL:
+Frontend URL:
+- `http://localhost:5173`
 
-- `http://localhost:5173` (or next available port)
+## API Endpoints
 
-## Build Frontend
+- `GET /api/medicines`
+- `POST /api/medicines`
+- `PUT /api/medicines/{id}`
+- `DELETE /api/medicines/{id}`
+- `GET /api/users`
 
-```bash
-cd frontend
-npm run build
-```
+## Screenshots
 
-## Notes
+### Login page
 
-- Frontend can run independently for UI development.
-- If `5173` is busy, Vite automatically picks another port.
+### Dashboard
+
+### Medicines page
+
+### Orders page
+
+### Reports page
+
+### Users page
+
+## OOP Concepts Used
+
+- Classes and objects
+- Inheritance
+- Abstraction
+- Encapsulation
+- Polymorphism
+- Interfaces
+- Layered architecture
+
+## Database
+
+This project uses the H2 in-memory database with seeded medicine records for quick startup and demonstration during testing and viva.
+
+## Team Contribution
+
+- Soha -> UI/UX frontend design
+- Tanishka -> frontend functionality, validations, API integration
+- Backend and database integrated collaboratively
+
+## Future Enhancements
+
+- JWT authentication
+- PDF report export
+- Email notifications
+- Barcode scanning
+- Sales analytics charts
+
+## Conclusion
+
+This project provides a practical and scalable solution for pharmacy operations, combining a modern frontend with a robust Spring Boot backend. It reflects real-world software engineering practices and is suitable for academic submission, demonstrations, and future production-oriented enhancements.
