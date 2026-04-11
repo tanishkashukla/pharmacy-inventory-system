@@ -22,14 +22,30 @@ public class Order {
     @Column(nullable = false)
     private LocalDateTime orderDate;
 
+    @Column
+    private String batchId;
+
+    @Column
+    private String customerId;
+
+    @Column(nullable = false)
+    private String orderType = "SALE"; // Default to SALE for backward compatibility
+
     public Order() {
         this.orderDate = LocalDateTime.now();
     }
 
-    public Order(String medicineName, int quantity, double totalPrice) {
+    public Order(String medicineName, int quantity, double totalPrice, String batchId, String customerId) {
+        this(medicineName, quantity, totalPrice, batchId, customerId, "SALE");
+    }
+
+    public Order(String medicineName, int quantity, double totalPrice, String batchId, String customerId, String orderType) {
         this.medicineName = medicineName;
         this.quantity = quantity;
         this.totalPrice = totalPrice;
+        this.batchId = batchId;
+        this.customerId = customerId;
+        this.orderType = orderType;
         this.orderDate = LocalDateTime.now();
     }
 
@@ -44,4 +60,13 @@ public class Order {
     public void setTotalPrice(double totalPrice) { this.totalPrice = totalPrice; }
     public LocalDateTime getOrderDate() { return orderDate; }
     public void setOrderDate(LocalDateTime orderDate) { this.orderDate = orderDate; }
+
+    public String getBatchId() { return batchId; }
+    public void setBatchId(String batchId) { this.batchId = batchId; }
+
+    public String getCustomerId() { return customerId; }
+    public void setCustomerId(String customerId) { this.customerId = customerId; }
+
+    public String getOrderType() { return orderType; }
+    public void setOrderType(String orderType) { this.orderType = orderType; }
 }

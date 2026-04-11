@@ -25,6 +25,11 @@ public class OrderController {
     public Order placeOrder(@RequestBody Map<String, Object> payload) {
         String medicineId = (String) payload.get("id");
         int quantity = Integer.parseInt(payload.get("orderQuantity").toString());
-        return orderService.placeOrder(medicineId, quantity);
+        String batchId = (String) payload.get("batchId");
+        String customerId = (String) payload.get("customerId");
+        String orderType = (String) payload.get("orderType");
+        if (orderType == null) orderType = "SALE"; // Default
+        
+        return orderService.placeOrder(medicineId, quantity, batchId, customerId, orderType);
     }
 }
