@@ -1,17 +1,37 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Button from '../components/Button'
+import userService from '../services/userService'
 
 function LoginPage({ onLogin }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [users, setUsers] = useState([])
+
+  useEffect(() => {
+    fetchUsers()
+  }, [])
+
+  const fetchUsers = async () => {
+    try {
+      const res = await userService.fetchUsers()
+      setUsers(res.data)
+    } catch (e) {
+      console.error('Failed to load users for demo login')
+    }
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    // Simple simulation for Viva
-    if (email.includes('admin')) onLogin('Admin')
-    else if (email.includes('pharmacist')) onLogin('Pharmacist')
-    else if (email.includes('buyer')) onLogin('Buyer')
-    else onLogin('Inventory Manager')
+    // Simulated match for Viva presentation
+    const matchedUser = users.find(u => u.email.toLowerCase() === email.toLowerCase())
+    if (matchedUser) {
+      onLogin(matchedUser)
+    } else {
+      // Fallback for demo roles if user not in DB yet
+      if (email.includes('admin')) onLogin({ role: 'Admin', id: 'admin', name: 'Admin', email })
+      else if (email.includes('buyer')) onLogin({ role: 'Buyer', id: 'buyer', name: 'Buyer', email })
+      else onLogin({ role: 'Inventory Manager', id: 'manager', name: 'Manager', email })
+    }
   }
 
   return (
@@ -52,10 +72,8 @@ function LoginPage({ onLogin }) {
         <div className="mt-8 rounded-xl bg-slate-50 p-4 text-xs text-slate-500">
           <p className="font-semibold uppercase text-slate-400">Demo Login Details:</p>
           <ul className="mt-2 space-y-1">
-            <li>Admin: admin@pharma.com</li>
-            <li>Pharmacist: pharmacist@pharma.com</li>
+            <li>Manager: manager@pharma.com</li>
             <li>Buyer: buyer@pharma.com</li>
-            <li>Inventory: manager@pharma.com</li>
           </ul>
         </div>
       </div>

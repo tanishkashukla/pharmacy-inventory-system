@@ -1,9 +1,9 @@
 export const ALL_NAV_ITEMS = [
   'Dashboard',
   'Medicines',
-  'Orders',
+  'Restock',
   'Buy Medicine',
-  'Sales',
+  'Orders',
   'Reports',
   'Users',
 ]
