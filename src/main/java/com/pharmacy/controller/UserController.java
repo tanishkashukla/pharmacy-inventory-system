@@ -7,6 +7,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import com.pharmacy.model.Order;
+import com.pharmacy.repository.OrderRepository;
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "*")
@@ -15,9 +19,17 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private OrderRepository orderRepository;
+
     @GetMapping
     public List<User> getAllUsers() {
         return userService.getAllUsers();
+    }
+
+    @GetMapping("/{id}/history")
+    public List<Order> getUserHistory(@PathVariable("id") String id) {
+        return orderRepository.findByCustomerId(id);
     }
 
     @PostMapping

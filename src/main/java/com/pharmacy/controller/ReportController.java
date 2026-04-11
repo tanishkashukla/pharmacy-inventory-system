@@ -31,8 +31,13 @@ public class ReportController {
 
         long totalMedicines = medicines.size();
         long lowStockCount = medicines.stream().filter(m -> m.getTotalQuantity() <= 20).count();
-        long totalOrders = orders.size();
-        double totalRevenue = orders.stream().mapToDouble(Order::getTotalPrice).sum();
+        
+        List<Order> salesOnly = orders.stream()
+                .filter(o -> "SALE".equalsIgnoreCase(o.getOrderType()))
+                .toList();
+
+        long totalOrders = salesOnly.size();
+        double totalRevenue = salesOnly.stream().mapToDouble(Order::getTotalPrice).sum();
 
         LocalDate thirtyDaysFromNow = LocalDate.now().plusDays(30);
         long expiringSoon = 0;

@@ -26,6 +26,8 @@ public class DataInitializer {
                         new User("Pharmacist One", "pharmacist@pharma.com", "9876543211", "Pharmacist", "pass123"));
                 userService.saveUser(
                         new User("Inv Manager", "manager@pharma.com", "9876543212", "Inventory Manager", "pass123"));
+                userService.saveUser(
+                        new User("Buyer User", "buyer@pharma.com", "9876543213", "Buyer", "pass123"));
             }
 
             // -- Seed Medicines --
