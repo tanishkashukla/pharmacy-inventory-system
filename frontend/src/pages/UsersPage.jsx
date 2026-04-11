@@ -1,14 +1,24 @@
 import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import Button from '../components/Button'
+import UserHistoryDrawer from '../components/UserHistoryDrawer'
 import userService from '../services/userService'
+
+const emptyForm = () => ({
+  name: '',
+  email: '',
+  phone: '',
+  role: 'Pharmacist',
+})
 
 function UsersPage() {
   const [users, setUsers] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', role: 'Pharmacist', password: '' })
+  const [formData, setFormData] = useState(emptyForm)
+  const [apiPassword, setApiPassword] = useState('')
   const [selectedUserId, setSelectedUserId] = useState('')
   const [loading, setLoading] = useState(false)
+  const [historyUser, setHistoryUser] = useState(null)
 
   useEffect(() => {
     fetchUsers()
@@ -33,13 +43,18 @@ function UsersPage() {
       return
     }
 
+    const existing = selectedUserId ? users.find((u) => u.id === selectedUserId) : null
+    const password =
+      selectedUserId && !apiPassword ? (existing?.password ?? '') : apiPassword
+    const payload = { ...formData, password }
+
     setLoading(true)
     try {
       if (selectedUserId) {
-        await userService.updateUser(selectedUserId, formData)
+        await userService.updateUser(selectedUserId, payload)
         toast.success('User updated successfully')
       } else {
-        await userService.addUser(formData)
+        await userService.addUser(payload)
         toast.success('User added successfully')
       }
       fetchUsers()
@@ -63,52 +78,132 @@ function UsersPage() {
   }
 
   const handleReset = () => {
-    setFormData({ name: '', email: '', phone: '', role: 'Pharmacist', password: '' })
+    setFormData(emptyForm())
+    setApiPassword('')
     setSelectedUserId('')
   }
 
-  const filteredUsers = users.filter(u => 
-    u.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    u.role.toLowerCase().includes(searchTerm.toLowerCase())
+  const handleEditClick = (e, user) => {
+    e.stopPropagation()
+    setSelectedUserId(user.id)
+    setFormData({
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+    })
+    setApiPassword(user.password ?? '')
+  }
+
+  const filteredUsers = users.filter(
+    (u) =>
+      u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      u.role.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   const getRoleBadgeColor = (role) => {
-    switch(role) {
-      case 'Admin': return 'bg-purple-100 text-purple-700'
-      case 'Pharmacist': return 'bg-blue-100 text-blue-700'
-      default: return 'bg-teal-100 text-teal-700'
+    switch (role) {
+      case 'Admin':
+        return 'bg-purple-100 text-purple-700'
+      case 'Pharmacist':
+        return 'bg-blue-100 text-blue-700'
+      default:
+        return 'bg-teal-100 text-teal-700'
     }
   }
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h3 className="mb-4 text-lg font-semibold text-slate-800">
-          {selectedUserId ? 'Modify User Access' : 'Register New User'}
+      {historyUser && <UserHistoryDrawer user={historyUser} onClose={() => setHistoryUser(null)} />}
+
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h3 className="mb-1 text-lg font-semibold text-slate-800">
+          {selectedUserId ? 'Modify user access' : 'Register new user'}
         </h3>
-        <form className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" onSubmit={e => e.preventDefault()}>
-          <input name="name" value={formData.name} onChange={handleInputChange} placeholder="Full Name" className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm" />
-          <input name="email" value={formData.email} onChange={handleInputChange} placeholder="Email" className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm" />
-          <input name="phone" value={formData.phone} onChange={handleInputChange} placeholder="Phone (10 digits)" className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm" />
-          <select name="role" value={formData.role} onChange={handleInputChange} className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm">
-            <option>Admin</option>
-            <option>Pharmacist</option>
-            <option>Inventory Manager</option>
-          </select>
-          <input name="password" type="password" value={formData.password} onChange={handleInputChange} placeholder="Password" className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm" />
-          <div className="flex gap-2 lg:col-span-1">
-            <Button variant="primary" onClick={handleSave} disabled={loading}>{selectedUserId ? 'Update' : 'Add User'}</Button>
-            <Button variant="outline" onClick={handleReset}>Reset</Button>
+        <p className="mb-6 text-sm text-slate-500">Name, email, phone, and role only.</p>
+
+        <form className="mx-auto max-w-3xl space-y-5" onSubmit={(e) => e.preventDefault()}>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="user-name" className="text-xs font-semibold uppercase text-slate-400">
+                Full name
+              </label>
+              <input
+                id="user-name"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                placeholder="e.g. Jane Doe"
+                autoComplete="name"
+                className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="user-email" className="text-xs font-semibold uppercase text-slate-400">
+                Email
+              </label>
+              <input
+                id="user-email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                placeholder="name@pharmacy.com"
+                autoComplete="email"
+                className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="user-phone" className="text-xs font-semibold uppercase text-slate-400">
+                Phone
+              </label>
+              <input
+                id="user-phone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleInputChange}
+                placeholder="10-digit mobile"
+                inputMode="numeric"
+                maxLength={10}
+                autoComplete="tel"
+                className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="user-role" className="text-xs font-semibold uppercase text-slate-400">
+                Role
+              </label>
+              <select
+                id="user-role"
+                name="role"
+                value={formData.role}
+                onChange={handleInputChange}
+                className="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+              >
+                <option>Admin</option>
+                <option>Pharmacist</option>
+                <option>Inventory Manager</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-3 border-t border-slate-100 pt-5">
+            <Button variant="primary" onClick={handleSave} disabled={loading}>
+              {selectedUserId ? 'Update' : 'Add user'}
+            </Button>
+            <Button variant="outline" type="button" onClick={handleReset}>
+              Reset
+            </Button>
           </div>
         </form>
       </div>
 
       <div className="space-y-4">
-        <input 
-          placeholder="Search by name or role..." 
-          className="w-full max-w-sm rounded-xl border border-slate-300 px-4 py-2 shadow-sm"
+        <input
+          placeholder="Search by name or role…"
+          className="w-full max-w-sm rounded-xl border border-slate-300 px-4 py-2 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
           value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
 
         <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -122,21 +217,50 @@ function UsersPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.map(user => (
-                <tr key={user.id} className="border-t border-slate-100 hover:bg-slate-50">
+              {filteredUsers.map((user) => (
+                <tr
+                  key={user.id}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setHistoryUser(user)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      setHistoryUser(user)
+                    }
+                  }}
+                  className="cursor-pointer border-t border-slate-100 outline-none transition hover:bg-brand-50/40 focus-visible:bg-brand-50/60"
+                >
                   <td className="px-4 py-3">
                     <div className="font-medium text-slate-800">{user.name}</div>
                     <div className="text-xs text-slate-500">{user.email}</div>
                   </td>
                   <td className="px-4 py-3 text-slate-600">{user.phone}</td>
                   <td className="px-4 py-3">
-                    <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${getRoleBadgeColor(user.role)}`}>
+                    <span
+                      className={`rounded-full px-2.5 py-1 text-xs font-semibold ${getRoleBadgeColor(user.role)}`}
+                    >
                       {user.role}
                     </span>
                   </td>
                   <td className="space-x-2 px-4 py-3 text-right">
-                    <button onClick={() => { setSelectedUserId(user.id); setFormData(user); }} className="text-brand-600 hover:underline">Edit</button>
-                    <button onClick={() => handleDelete(user.id)} className="text-red-500 hover:underline">Delete</button>
+                    <button
+                      type="button"
+                      onClick={(e) => handleEditClick(e, user)}
+                      className="text-brand-600 hover:underline"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleDelete(user.id)
+                      }}
+                      className="text-red-500 hover:underline"
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}

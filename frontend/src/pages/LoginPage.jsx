@@ -10,6 +10,7 @@ function LoginPage({ onLogin }) {
     // Simple simulation for Viva
     if (email.includes('admin')) onLogin('Admin')
     else if (email.includes('pharmacist')) onLogin('Pharmacist')
+    else if (email.includes('buyer')) onLogin('Buyer')
     else onLogin('Inventory Manager')
   }
 
@@ -53,6 +54,8 @@ function LoginPage({ onLogin }) {
           <ul className="mt-2 space-y-1">
             <li>Admin: admin@pharma.com</li>
             <li>Pharmacist: pharmacist@pharma.com</li>
+            <li>Buyer: buyer@pharma.com</li>
+            <li>Inventory: manager@pharma.com</li>
           </ul>
         </div>
       </div>

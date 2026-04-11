@@ -7,11 +7,14 @@ import MedicinesPage from './pages/MedicinesPage'
 import OrdersPage from './pages/OrdersPage'
 import ReportsPage from './pages/ReportsPage'
 import UsersPage from './pages/UsersPage'
+import BuyMedicinePage from './pages/BuyMedicinePage'
+import SalesPage from './pages/SalesPage'
 import LoginPage from './pages/LoginPage'
 
 import inventoryMedicineService from './services/inventoryMedicineService'
 import orderService from './services/orderService'
 import reportService from './services/reportService'
+import { isPageAllowedForRole } from './config/navigation'
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -33,6 +36,13 @@ function App() {
     }
   }, [isLoggedIn])
 
+  useEffect(() => {
+    if (!isLoggedIn || !userRole) return
+    if (!isPageAllowedForRole(userRole, activePage)) {
+      setActivePage(userRole === 'Buyer' ? 'Buy Medicine' : 'Dashboard')
+    }
+  }, [isLoggedIn, userRole, activePage])
+
   const fetchAllData = async () => {
     try {
       const [medRes, orderRes, statRes] = await Promise.all([
@@ -50,15 +60,24 @@ function App() {
 
   const handleLogin = (role) => {
     setUserRole(role)
+    setActivePage(role === 'Buyer' ? 'Buy Medicine' : 'Dashboard')
     setIsLoggedIn(true)
   }
 
   const pageContent = useMemo(() => {
+    if (userRole === 'Buyer') {
+      return <BuyMedicinePage medicines={medicines} refreshMedicines={fetchAllData} />
+    }
+
     switch (activePage) {
       case 'Medicines':
         return <MedicinesPage medicines={medicines} setMedicines={setMedicines} refreshMedicines={fetchAllData} />
       case 'Orders':
         return <OrdersPage medicines={medicines} orders={orders} refreshMedicines={fetchAllData} />
+      case 'Buy Medicine':
+        return <BuyMedicinePage medicines={medicines} refreshMedicines={fetchAllData} />
+      case 'Sales':
+        return <SalesPage />
       case 'Reports':
         return <ReportsPage medicines={medicines} stats={stats} orders={orders} />
       case 'Users':
@@ -75,7 +94,7 @@ function App() {
         ]
         return <DashboardPage stats={dashStats} />
     }
-  }, [activePage, medicines, stats, orders])
+  }, [activePage, medicines, stats, orders, userRole])
 
   if (!isLoggedIn) {
     return (
@@ -89,10 +108,10 @@ function App() {
   return (
     <div className="min-h-screen bg-slate-50 lg:flex">
       <Toaster position="top-right" />
-      <Sidebar activePage={activePage} setActivePage={setActivePage} />
+      <Sidebar activePage={activePage} setActivePage={setActivePage} userRole={userRole} />
       <main className="flex-1 p-4 sm:p-6 lg:p-8">
         <div className="mb-4 flex items-center justify-between">
-          <Navbar title={activePage} />
+          <Navbar title={userRole === 'Buyer' ? 'Buy Medicine' : activePage} />
           <div className="flex items-center gap-3">
             <span className="text-xs font-bold uppercase text-slate-400">View as:</span>
             <span className="rounded-lg bg-brand-100 px-3 py-1 text-xs font-bold text-brand-700">{userRole}</span>

@@ -4,10 +4,12 @@ import Button from '../components/Button'
 import MedicineTable from '../components/MedicineTable'
 import SearchBar from '../components/SearchBar'
 import inventoryMedicineService from '../services/inventoryMedicineService'
+import { MEDICINE_CATEGORIES } from '../constants/medicineCategories'
 
 function MedicinesPage({ medicines, setMedicines, refreshMedicines }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedMedicineId, setSelectedMedicineId] = useState('')
+  const [medicinePicker, setMedicinePicker] = useState('')
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
@@ -106,10 +108,12 @@ function MedicinesPage({ medicines, setMedicines, refreshMedicines }) {
   const resetForm = () => {
     setFormData({ name: '', batchNumber: '', category: '', price: '', quantity: '', expiryDate: '' })
     setSelectedMedicineId('')
+    setMedicinePicker('')
   }
 
   const handleSelect = (medicine) => {
     setSelectedMedicineId(medicine.id)
+    setMedicinePicker('')
     setFormData({
       name: medicine.name,
       batchNumber: medicine.batches?.[0]?.batchNumber || '',
@@ -120,6 +124,32 @@ function MedicinesPage({ medicines, setMedicines, refreshMedicines }) {
     })
   }
 
+  const handleMedicineDropdown = (e) => {
+    const v = e.target.value
+    if (v === '') {
+      resetForm()
+      return
+    }
+    if (v === '__new__') {
+      setSelectedMedicineId('')
+      setMedicinePicker('__new__')
+      setFormData({
+        name: '',
+        batchNumber: '',
+        category: '',
+        price: '',
+        quantity: '',
+        expiryDate: '',
+      })
+      return
+    }
+    const med = medicines.find((m) => String(m.id) === String(v))
+    if (med) handleSelect(med)
+  }
+
+  const pickerSelectValue =
+    selectedMedicineId || (medicinePicker === '__new__' ? '__new__' : '')
+
   return (
     <section className="space-y-5">
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -127,9 +157,51 @@ function MedicinesPage({ medicines, setMedicines, refreshMedicines }) {
           {selectedMedicineId ? 'Edit Medicine' : 'Add New Medicine'}
         </h3>
         <form className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" onSubmit={e => e.preventDefault()}>
-          <input name="name" value={formData.name} onChange={handleInputChange} placeholder="Medicine Name" className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm" />
+          <div className="flex flex-col gap-2 md:col-span-2 lg:col-span-1">
+            <label htmlFor="medicine-picker" className="text-xs font-semibold uppercase text-slate-400">
+              Medicine
+            </label>
+            <select
+              id="medicine-picker"
+              value={pickerSelectValue}
+              onChange={handleMedicineDropdown}
+              className="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+            >
+              <option value="">Select medicine…</option>
+              <option value="__new__">+ New medicine</option>
+              {medicines.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.name}
+                </option>
+              ))}
+            </select>
+            {medicinePicker === '__new__' && !selectedMedicineId && (
+              <input
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                placeholder="Type new medicine name"
+                className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+              />
+            )}
+          </div>
           <input name="batchNumber" value={formData.batchNumber} onChange={handleInputChange} placeholder="Batch Number" className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm" disabled={!!selectedMedicineId} />
-          <input name="category" value={formData.category} onChange={handleInputChange} placeholder="Category" className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm" />
+          <select
+            name="category"
+            value={formData.category}
+            onChange={handleInputChange}
+            className="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+          >
+            <option value="">Select category</option>
+            {MEDICINE_CATEGORIES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+            {formData.category && !MEDICINE_CATEGORIES.includes(formData.category) && (
+              <option value={formData.category}>{formData.category} (current)</option>
+            )}
+          </select>
           <input name="price" type="number" value={formData.price} onChange={handleInputChange} placeholder="Price (Rs)" className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm" />
           <input name="quantity" type="number" value={formData.quantity} onChange={handleInputChange} placeholder="Quantity" className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm" disabled={!!selectedMedicineId} />
           <input name="expiryDate" type="date" value={formData.expiryDate} onChange={handleInputChange} className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm" disabled={!!selectedMedicineId} />
